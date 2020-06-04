@@ -87,6 +87,72 @@ public:
     }
 };
 
+class Iterator {
+    bool hasNext();
+    virtual Student next();
+};
+
+class Aggregate {
+    Iterator iterator();
+};
+
+class MyStudentListIterator : public Iterator {
+
+private:
+    MyStudentList* myStudentList;
+    int index;
+public:
+    //コンストラクタ
+    MyStudentListIterator(MyStudentList* list) {
+        this->myStudentList = list;
+        this->index = 0;
+    }
+
+    bool hasNext() {
+        if (this->myStudentList->getSize() > index) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    Student next() override {
+        Student s = myStudentList->getStudentAt(index);
+        index++;
+        return s;
+    }
+};
+
+class MyStudentList : public StudentList, public Aggregate {
+public:
+    MyStudentList() {
+    }
+
+    Iterator iterator() {
+        return MyStudentListIterator(this);
+    }
+};
+
+class VeteranTeacher :public Teacher {
+    private MyStudentList list;
+
+    public void createStudentList() {
+        list = new MyStudentList(3);
+        list.add(new Student("中川雄介", 1));
+        list.add(new Student("板東恵美", 2));
+        list.add(new Student("水島太郎", 1));
+    }
+
+    public void callStudents() {
+        Iterator itr = list.iterator();
+        while (itr.hasNext()) {
+            System.out.println(((Student)itr.next()).getName());
+        }
+    }
+}
+
+
 int main() {
     MyTeacher* you = new MyTeacher();
     you->createStudentList();
